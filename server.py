@@ -5,9 +5,6 @@ import os
 import datetime
 import json
 from groq import Groq
-import sympy as sp
-from sympy.parsing.sympy_parser import parse_expr
-import PyPDF2
 from datetime import datetime, timedelta
 from flask_socketio import SocketIO, emit
 import threading
@@ -159,7 +156,12 @@ def generate_response(prompt, max_tokens=1024):
         )
 
 def extract_text_from_pdf(pdf_path):
+    """
+    Lazily import PyPDF2 so that heavy PDF dependencies don't slow down
+    initial app startup on resource-constrained platforms like Render.
+    """
     try:
+        import PyPDF2
         with open(pdf_path, 'rb') as file:
             reader = PyPDF2.PdfReader(file)
             text = ""
@@ -876,6 +878,12 @@ IMPORTANT FORMATTING RULES:
 
 @app.route('/solve_math', methods=['POST'])
 def solve_math():
+    # Lazy-import SymPy so large math dependencies don't affect startup time
+    try:
+        import sympy as sp
+        from sympy.parsing.sympy_parser import parse_expr
+    except Exception as e:
+        return jsonify({"error": f"Math engine is not available: {e}"}), 500
     data = request.get_json()
     equation = data.get('equation', '')
     
