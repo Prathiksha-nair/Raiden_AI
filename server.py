@@ -110,13 +110,11 @@ except Exception as e:
 Groq client initialization
 
 On platforms like Render the GROQ_API_KEY environment variable might be
-missing. The Groq Python client raises immediately if api_key is an empty
-string, which would cause the whole Flask app to fail to import and the
-service to return "cannot handle this request".
-
-To keep the backend (and UI) available even without a key, we only create
-the client when a non-empty key is present and gracefully degrade the
-chat features otherwise.
+missing or network access to the Groq API could be slow. To avoid startup
+timeouts and crashes, we:
+- Only create the client when a non-empty key is present
+- Do NOT make any network calls at import time
+- Degrade chat features gracefully when Groq is unavailable
 """
 client = None
 ACTIVE_MODEL = None
@@ -124,34 +122,10 @@ ACTIVE_MODEL = None
 if GROQ_API_KEY:
     try:
         client = Groq(api_key=GROQ_API_KEY)
-
-        # Current supported models (Updated Oct 2025)
+        # Prefer an override from env, else use a sensible default
         env_model_override = os.getenv('GROQ_MODEL')
-        SUPPORTED_MODELS = [
-            *( [env_model_override] if env_model_override else [] ),
-            "llama-3.1-8b-instant",
-        ]
-
-        # Select the first working model
-        for model in SUPPORTED_MODELS:
-            try:
-                test_response = client.chat.completions.create(
-                    messages=[{"role": "user", "content": "Hello"}],
-                    model=model,
-                    max_tokens=10
-                )
-                if test_response.choices:
-                    ACTIVE_MODEL = model
-                    break
-            except Exception as e:
-                print(f"Model {model} not available: {str(e)}")
-                continue
-
-        if not ACTIVE_MODEL:
-            print("WARNING: Groq API test failed. Falling back to default model name.")
-            ACTIVE_MODEL = "llama-3.1-8b-instant"
-        else:
-            print(f"Using model: {ACTIVE_MODEL}")
+        ACTIVE_MODEL = env_model_override or "llama-3.1-8b-instant"
+        print(f"Groq client initialized. Using model name: {ACTIVE_MODEL}")
     except Exception as e:
         print(f"WARNING: Failed to initialize Groq client: {e}")
         client = None
