@@ -1,4 +1,4 @@
-p// Web Search Functionality
+// Web Search Functionality
 class WebSearch {
     constructor() {
         // Header search elements

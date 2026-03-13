@@ -87,10 +87,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const panel = document.getElementById(panelId);
         if (panel) panel.classList.add('active');
 
-        if (panelId === 'citations-panel') {
-            initCitationGenerator();
-        }
-
         if (window.innerWidth <= 992) sidebar.classList.remove('active');
     }
 
@@ -2196,103 +2192,6 @@ int main() {
             notification.classList.add('fade-out');
             setTimeout(() => notification.remove(), 500);
         }, 5000);
-    }
-
-    function initCitationGenerator() {
-        const sourceTypeSelect = document.getElementById('source-type');
-        const generateBtn = document.getElementById('generate-citation-btn');
-        const copyBtn = document.getElementById('copy-citation');
-        const clearBtn = document.getElementById('clear-citation');
-
-        if (sourceTypeSelect) {
-            sourceTypeSelect.addEventListener('change', () => {
-                toggleCitationFields();
-            });
-            toggleCitationFields();
-        }
-
-        if (generateBtn) {
-            generateBtn.addEventListener('click', () => {
-                generateCitation();
-            });
-        }
-
-        if (copyBtn) {
-            copyBtn.addEventListener('click', () => {
-                copyCitation();
-            });
-        }
-
-        if (clearBtn) {
-            clearBtn.addEventListener('click', () => {
-                clearCitationForm();
-            });
-        }
-
-        function toggleCitationFields() {
-            const sourceType = sourceTypeSelect.value;
-            const allFields = document.querySelectorAll('.citation-field');
-            
-            allFields.forEach(field => {
-                field.style.display = 'none';
-            });
-            
-            const requiredFields = document.querySelectorAll(`.citation-field.${sourceType}`);
-            requiredFields.forEach(field => {
-                field.style.display = 'block';
-            });
-        }
-
-        function generateCitation() {
-            const sourceType = sourceTypeSelect.value;
-            const formData = {};
-            
-            document.querySelectorAll(`.citation-field.${sourceType} input`).forEach(input => {
-                formData[input.name] = input.value;
-            });
-            
-            fetch('/generate_citation', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sourceType, ...formData })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    showError(data.error);
-                } else {
-                    document.getElementById('citation-result').value = data.citation;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showError('Failed to generate citation');
-            });
-        }
-
-        function copyCitation() {
-            const citation = document.getElementById('citation-result').value;
-            if (!citation) return;
-            
-            navigator.clipboard.writeText(citation)
-                .then(() => {
-                    const originalText = copyBtn.innerHTML;
-                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                    setTimeout(() => { 
-                        copyBtn.innerHTML = originalText; 
-                    }, 2000);
-                })
-                .catch(error => {
-                    console.error('Failed to copy citation:', error);
-                });
-        }
-
-        function clearCitationForm() {
-            document.querySelectorAll('.citation-field input').forEach(input => {
-                input.value = '';
-            });
-            document.getElementById('citation-result').value = '';
-        }
     }
 
     // Remove the typing cursor CSS if present
