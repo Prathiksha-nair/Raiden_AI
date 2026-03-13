@@ -12,3 +12,5 @@ gunicorn==21.2.0
 eventlet==0.33.3
 requests==2.31.0
 beautifulsoup4==4.12.2 
+gunicorn==21.2.0
+eventlet==0.33.3
