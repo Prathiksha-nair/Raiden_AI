@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raiden AI - Your University Assistant</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <img src="/static/images/logo.png" alt="Raiden AI Logo">
+                    </div>
+                </div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item active" data-panel="chat">
+                    <i class="fas fa-comment-dots"></i>
+                    <span class="tooltip">Chat</span>
+                </li>
+                <li class="nav-item" data-panel="code">
+                    <i class="fas fa-code"></i>
+                    <span class="tooltip">Code Playground</span>
+                </li>
+                <li class="nav-item" data-panel="flashcards">
+                    <i class="fas fa-layer-group"></i>
+                    <span class="tooltip">Flashcards</span>
+                </li>
+                <li class="nav-item" data-panel="planner">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="tooltip">Study Planner</span>
+                </li>
+                <li class="nav-item" data-panel="math">
+                    <i class="fas fa-square-root-alt"></i>
+                    <span class="tooltip">Math Solver</span>
+                </li>
+                <li class="nav-item" data-panel="pdf">
+                    <i class="fas fa-file-pdf"></i>
+                    <span class="tooltip">PDF Summarizer</span>
+                </li>
+                <li class="nav-item" data-panel="citations">
+                    <i class="fas fa-quote-right"></i>
+                    <span class="tooltip">Citation Generator</span>
+                </li>
+                <li class="nav-item" data-panel="transcribe">
+                    <i class="fas fa-microphone-alt"></i>
+                    <span class="tooltip">Lecture Transcriber</span>
+                </li>
+                <li class="nav-item" data-panel="attendance">
+                    <i class="fas fa-user-check"></i>
+                    <span class="tooltip">Attendance Manager</span>
+                </li>
+
+            </ul>
+            
+            <div class="sidebar-footer">
+                <div class="user-avatar">P</div>
+            </div>
+        </div>
+        
+        <!-- Main content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="page-title">Raiden AI Chat</div>
+                
+                <div class="header-actions">
+                    <div class="header-search-container">
+                        <input type="text" id="header-search-input" placeholder="Search the web..." class="header-search-input">
+                        <button class="header-search-btn" id="header-search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <button class="notification-btn" id="about-btn">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chat area -->
+            <div class="chat-container" id="chat-container">
+                <div class="welcome-screen" id="welcome-screen">
+                    <div class="welcome-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="welcome-title">Welcome to Raiden AI</div>
+                    <div class="welcome-subtitle">
+                        Your intelligent university assistant. I can help with math problems, summarize PDFs, generate citations, create flashcards, and much more!
+                    </div>
+                    
+                    <div class="welcome-features">
+                        <div class="welcome-feature">
+                            <div class="welcome-feature-icon">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <div class="welcome-feature-title">Smart Chat</div>
+                            <div class="welcome-feature-desc">
+                                Get instant answers to your academic questions with our advanced AI.
+                            </div>
+                        </div>
+                        
+                        <div class="welcome-feature">
+                            <div class="welcome-feature-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <div class="welcome-feature-title">PDF Summarizer</div>
+                            <div class="welcome-feature-desc">
+                                Upload your PDFs and get concise summaries of key points.
+                            </div>
+                        </div>
+                        
+                        <div class="welcome-feature">
+                            <div class="welcome-feature-icon">
+                                <i class="fas fa-square-root-alt"></i>
+                            </div>
+                            <div class="welcome-feature-title">Math Solver</div>
+                            <div class="welcome-feature-desc">
+                                Step-by-step solutions to complex math and science problems.
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="quick-actions">
+                        <button class="quick-action-btn">Solve 2x + 5 = 15</button>
+                        <button class="quick-action-btn">Generate APA citation</button>
+                        <button class="quick-action-btn">Create study plan</button>
+                        <button class="quick-action-btn">Explain quantum physics</button>
+                    </div>
+                </div>
+                
+                <div class="typing-indicator" style="display: none;">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+            
+            <!-- Input area -->
+            <div class="input-container">
+                <div class="input-box">
+                    <button class="voice-input-btn" id="voice-input-btn">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <textarea id="message-input" placeholder="Ask Raiden AI anything..."></textarea>
+                    <div class="input-actions">
+                        <button class="action-btn send-btn" id="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Feature panels -->
+        <!-- Code Playground -->
+       <div id="code-panel" class="feature-panel">
+    <div class="panel-header">
+        <h2 class="panel-title"><i class="fas fa-code"></i> Code Playground</h2>
+        <button class="close-panel">×</button>
+    </div>
+    <div class="code-toolbar">
+        <div class="toolbar-left">
+            <select class="language-selector" id="languageSelect">
+                <option value="python">Python</option>
+                <option value="javascript">JavaScript</option>
+                <option value="html">HTML</option>
+                <option value="c">C</option>
+            </select>
+            <button class="format-code" id="formatCodeBtn" title="Format Code">
+                <i class="fas fa-magic"></i>
+            </button>
+        </div>
+        <div class="toolbar-right">
+            <button class="run-code" id="runCodeBtn">Compile & Run</button>
+        </div>
+    </div>
+    <textarea class="code-editor" id="codeInput">
+# Welcome to Raiden AI Code Playground
+# Professional Python Compiler Environment
+
+def fibonacci(n):
+    """Calculate the nth Fibonacci number using recursion"""
+    if n <= 1:
+        return n
+    else:
+        return fibonacci(n-1) + fibonacci(n-2)
+
+# Test the function
+print("Fibonacci sequence (first 10 numbers):")
+for i in range(10):
+    print(f"F({i}) = {fibonacci(i)}")
+
+# Calculate factorial
+def factorial(n):
+    """Calculate factorial using recursion"""
+    if n == 0:
+        return 1
+    else:
+        return n * factorial(n-1)
+
+print(f"\nFactorial of 5: {factorial(5)}")
+    </textarea>
+    <div class="code-explanation" id="codeExplanation">
+        <h4><i class="fas fa-lightbulb"></i> Code Analysis</h4>
+        <div style="color: #aaa;">Analysis will appear here...</div>
+    </div>
+    <div class="html-preview" id="htmlPreview" style="display: none;">
+        <h4><i class="fas fa-eye"></i> HTML Preview</h4>
+        <iframe id="previewFrame" style="width: 100%; height: 300px; border: 1px solid rgba(170, 126, 238, 0.3); border-radius: 8px; background: white;"></iframe>
+    </div>
+</div>  
+        <!-- Flashcards -->
+        <div class="feature-panel" id="flashcards-panel">
+    <div class="panel-header">
+        <div class="panel-title">
+            <i class="fas fa-layer-group"></i>
+            <span>Flashcards</span>
+        </div>
+        <button class="close-panel">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <div class="flashcard-container">
+        <div class="flashcard" id="flashcard">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    <!-- Front content will be loaded here -->
+                </div>
+                <div class="flashcard-back">
+                    <!-- Back content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="flashcard-nav">
+        <button class="flashcard-btn" id="prev-flashcard">
+            <i class="fas fa-arrow-left"></i> Previous
+        </button>
+        <button class="flashcard-btn" id="flip-flashcard">
+            <i class="fas fa-sync-alt"></i> Flip
+        </button>
+        <button class="flashcard-btn" id="next-flashcard">
+            Next <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+    
+    <div style="margin-top: 30px; text-align: center;">
+        <button class="add-task-btn" id="generate-flashcards-btn" style="width: 100%;">
+            <i class="fas fa-plus"></i> Generate Flashcards from Notes
+        </button>
+    </div>
+</div>
+        
+        <!-- Study Planner -->
+     <div class="feature-panel" id="planner-panel">
+    <div class="panel-header">
+        <div class="panel-title">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Study Planner</span>
+        </div>
+        <button class="close-panel">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <div class="planner-header">
+        <div class="planner-nav">
+            <button class="planner-nav-btn active" data-period="today">Today</button>
+            <button class="planner-nav-btn" data-period="week">Week</button>
+            <button class="planner-nav-btn" data-period="month">Month</button>
+        </div>
+        <button class="add-task-btn" id="addTaskBtn">
+            <i class="fas fa-plus"></i> Add Task
+        </button>
+    </div>
+    
+    <div class="task-list" id="taskList">
+        <!-- Tasks will be loaded here -->
+    </div>
+    
+    <div class="planner-stats">
+        <div class="stat-card">
+            <div class="stat-value" id="completed-count">0</div>
+            <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="pending-count">0</div>
+            <div class="stat-label">Pending</div>
+        </div>
+    </div>
+</div>        <!-- Math Solver -->
+        <div class="feature-panel" id="math-panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <i class="fas fa-square-root-alt"></i>
+                    <span>Math & Science Solver</span>
+                </div>
+                <button class="close-panel">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+                <div style="width: 100%; max-width: 420px; margin: 0 auto;">
+                    <label for="math-input" style="display:block; color:var(--accent); font-weight:600; font-size:16px; margin-bottom:8px;">Enter your math problem or science question</label>
+                    <textarea id="math-input" class="code-editor" placeholder="e.g. 2x + 5 = 15" style="height: 100px;"></textarea>
+                    <div class="math-symbol-toolbar">
+                        <div style="color: var(--accent); font-size: 15px; font-weight: 500; margin-bottom: 6px;">Math Symbols</div>
+                        <div class="math-symbol-row">
+                            <button class="math-symbol-btn operator">+</button>
+                            <button class="math-symbol-btn operator">-</button>
+                            <button class="math-symbol-btn operator">×</button>
+                            <button class="math-symbol-btn operator">÷</button>
+                            <button class="math-symbol-btn operator">=</button>
+                            <button class="math-symbol-btn function">√</button>
+                            <button class="math-symbol-btn function">π</button>
+                            <button class="math-symbol-btn function">x²</button>
+                            <button class="math-symbol-btn function">xⁿ</button>
+                            <button class="math-symbol-btn function">∫</button>
+                            <button class="math-symbol-btn function">∑</button>
+                            <button class="math-symbol-btn function">∞</button>
+                        </div>
+                    </div>
+                    <button class="run-code" style="width: 100%; margin-top: 15px;">
+                        Solve
+                    </button>
+                </div>
+                <div class="code-output" style="width: 100%; max-width: 420px; margin: 24px auto 0 auto; text-align: center; padding: 0; background: none; border: none; box-shadow: none;">
+                    <div id="math-result-block" style="display: flex; justify-content: center; align-items: center; min-height: 48px; margin: 0 auto;">
+                        <!-- Result will be injected here as a single green block -->
+                    </div>
+                    <div id="math-explanation-block" style="margin-top: 18px;">
+                        <!-- Explanation will be injected here, starting with Problem Analysis -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- PDF Summarizer -->
+        <div class="feature-panel" id="pdf-panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>PDF Summarizer</span>
+                </div>
+                <button class="close-panel">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div style="text-align: center; padding: 40px 20px; border: 2px dashed rgba(170, 126, 238, 0.3); border-radius: 12px; margin-bottom: 20px;">
+                <i class="fas fa-file-upload" style="font-size: 40px; color: var(--accent); margin-bottom: 15px;"></i>
+                <h3 style="margin-bottom: 10px;">Upload PDF File</h3>
+                <p style="opacity: 0.8; margin-bottom: 20px;">Drag & drop your PDF file here or click to browse</p>
+                <button class="add-task-btn">
+                    <i class="fas fa-folder-open"></i> Select File
+                </button>
+            </div>
+        </div>
+                    
+        <!-- Citation Generator -->
+<div class="feature-panel" id="citations-panel">
+    <div class="panel-header">
+        <div class="panel-title">
+            <i class="fas fa-quote-right"></i>
+            <span>Citation Generator</span>
+        </div>
+        <button class="close-panel">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <div class="citation-form">
+        <div class="form-group">
+            <label>Citation Style</label>
+            <select class="language-selector" id="citation-style">
+                <option value="apa">APA (7th Edition)</option>
+                <option value="mla">MLA (9th Edition)</option>
+                <option value="chicago">Chicago</option>
+                <option value="harvard">Harvard</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Source Type</label>
+            <select class="language-selector" id="source-type">
+                <option value="book">Book</option>
+                <option value="journal">Journal Article</option>
+                <option value="website">Website</option>
+                <option value="video">Video</option>
+                <option value="newspaper">Newspaper</option>
+                <option value="thesis">Thesis/Dissertation</option>
+                <option value="conference">Conference Paper</option>
+                <option value="report">Report</option>
+            </select>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Author(s)</label>
+                <input type="text" id="citation-author" placeholder="Lastname, F., & Lastname, F.">
+            </div>
+            <div class="form-group">
+                <label>Year</label>
+                <input type="text" id="citation-year" placeholder="YYYY">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="citation-title" placeholder="Title of the work">
+        </div>
+        
+        <div class="form-group" id="journal-fields">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Journal/Book Title</label>
+                    <input type="text" id="journal-title" placeholder="Journal or Book Title">
+                </div>
+                <div class="form-group">
+                    <label>Volume</label>
+                    <input type="text" id="volume" placeholder="Volume number">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Issue</label>
+                    <input type="text" id="issue" placeholder="Issue number">
+                </div>
+                <div class="form-group">
+                    <label>Page(s)</label>
+                    <input type="text" id="pages" placeholder="Page range">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group" id="website-fields">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Website Title</label>
+                    <input type="text" id="website-title" placeholder="Website name">
+                </div>
+                <div class="form-group">
+                    <label>URL</label>
+                    <input type="text" id="url" placeholder="https://">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Publication Date</label>
+                    <input type="text" id="pub-date" placeholder="YYYY, Month DD">
+                </div>
+                <div class="form-group">
+                    <label>Retrieval Date</label>
+                    <input type="text" id="retrieval-date" placeholder="YYYY, Month DD">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group" id="publisher-fields">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Publisher</label>
+                    <input type="text" id="publisher" placeholder="Publisher name">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="location" placeholder="City, Country">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group" id="doi-fields">
+            <label>DOI</label>
+            <input type="text" id="doi" placeholder="10.xxxx/xxxxxx">
+        </div>
+        
+        <button class="run-code" id="generate-citation-btn" style="width: 100%;">
+            <i class="fas fa-magic"></i> Generate Citation
+        </button>
+    </div>
+    
+    <div class="code-output" id="citation-output">
+        <div style="color: #aaa;">Generated citation will appear here...</div>
+    </div>
+    
+    <div class="citation-actions">
+        <button class="transcriber-btn" id="copy-citation">
+            <i class="fas fa-copy"></i> Copy Citation
+        </button>
+        <button class="transcriber-btn" id="clear-citation">
+            <i class="fas fa-trash"></i> Clear Form
+        </button>
+    </div>
+</div>
+        
+        <!-- Lecture Transcriber -->
+        <div class="feature-panel" id="transcribe-panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <i class="fas fa-microphone-alt"></i>
+                    <span>Lecture Transcriber</span>
+                </div>
+                <button class="close-panel">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="transcriber-container">
+                <div class="recording-controls">
+                    <button class="record-btn" id="record-btn">
+                        <i class="fas fa-microphone"></i>
+                        <span class="btn-text">Start Recording</span>
+                    </button>
+                    <div class="recording-status" id="recording-status">
+                        <div class="status-indicator"></div>
+                        <span class="status-text">Ready to record</span>
+                    </div>
+                </div>
+                
+                <div class="transcript-container">
+                    <div class="transcript-header">
+                        <h4><i class="fas fa-file-alt"></i> Live Transcript</h4>
+                        <div class="transcript-actions">
+                            <button class="transcript-action-btn" id="clear-transcript" title="Clear transcript">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="transcript-action-btn" id="copy-transcript" title="Copy transcript">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="transcript-text" id="transcript-text">
+                        <div class="transcript-placeholder">
+                            <i class="fas fa-microphone-slash"></i>
+                            <p>Click "Start Recording" to begin transcription...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="transcriber-actions">
+                    <button class="transcriber-btn primary" id="generate-slides">
+                        <i class="fas fa-file-powerpoint"></i> Generate Slides
+                    </button>
+                </div>
+                
+                <div class="slide-preview" id="slide-preview">
+                    <div class="slide-preview-placeholder">
+                        <i class="fas fa-file-powerpoint"></i>
+                        <p>Generated slides will appear here...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Manager -->
+        <div class="feature-panel" id="attendance-panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <i class="fas fa-user-check"></i>
+                    <span>Attendance Manager</span>
+                </div>
+                <button class="close-panel">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="attendance-container">
+                <div class="attendance-stats">
+                    <div class="stat-card">
+                        <div class="stat-value">0%</div>
+                        <div class="stat-label">Present</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">0%</div>
+                        <div class="stat-label">Absent</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Late</div>
+                    </div>
+                </div>
+
+                <div class="calendar-navigation">
+                    <button class="nav-btn" id="prev-month">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h4 id="current-month" style="margin: 0; color: var(--accent); flex: 1; text-align: center;"></h4>
+                    <button class="nav-btn" id="next-month">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <div class="attendance-calendar">
+                    <!-- Calendar will be generated dynamically by JavaScript -->
+                </div>
+
+                <div class="attendance-actions">
+                    <button class="transcriber-btn" style="flex: 1;">
+                        <i class="fas fa-file-export"></i> Export
+                    </button>
+                    <button class="transcriber-btn primary" style="flex: 1;">
+                        <i class="fas fa-plus"></i> Add Record
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+
+        
+        <!-- About Panel -->
+        <div class="feature-panel" id="about-panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About Raiden AI</span>
+                </div>
+                <button class="close-panel">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="about-content">
+                <div class="about-section">
+                    <div class="about-title">
+                        <i class="fas fa-bolt"></i>
+                        What is Raiden AI?
+                    </div>
+                    <div class="about-text">
+                        Raiden AI is an advanced AI-based personal assistant system developed specifically for university students and teachers. It combines powerful natural language processing with education-centric features to make studying, teaching, and managing academic tasks easier and more efficient.
+                    </div>
+                </div>
+                
+                <div class="about-section">
+                    <div class="about-title">
+                        <i class="fas fa-star"></i>
+                        Key Features
+                    </div>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <div class="feature-name">Smart Chat</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <div class="feature-name">PDF Summarizer</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-square-root-alt"></i>
+                            </div>
+                            <div class="feature-name">Math Solver</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-quote-right"></i>
+                            </div>
+                            <div class="feature-name">Citation Generator</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="feature-name">Code Playground</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div class="feature-name">Flashcards</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="feature-name">Study Planner</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-microphone"></i>
+                            </div>
+                            <div class="feature-name">Voice Input</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-microphone-alt"></i>
+                            </div>
+                            <div class="feature-name">Lecture Transcriber</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div class="feature-name">Attendance</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="about-section">
+                    <div class="about-title">
+                        <i class="fas fa-cogs"></i>
+                        Technology Stack
+                    </div>
+                    <div class="about-text">
+                        Raiden AI leverages a modern tech stack including:
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>Python + Flask for backend</li>
+                            <li>LLaMA via llama-cpp for AI processing</li>
+                            <li>SymPy for symbolic math</li>
+                            <li>HTML5/CSS3/JavaScript for frontend</li>
+                            <li>Web Speech API for voice interaction</li>
+                            <li>Whisper API for lecture transcription</li>
+                            <li>RunPod + Cloudflare for hosting</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="creator-info">
+                    <div class="creator-avatar">P</div>
+                    <div class="creator-details">
+                        <div class="creator-name">Prathiksha</div>
+                        <div class="creator-role">Creator of Raiden AI</div>
+                        <div class="creator-social">
+                            <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fas fa-envelope"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating background elements -->
+        <div class="floating-element floating-1"></div>
+        <div class="floating-element floating-2"></div>
+        <div class="floating-element floating-3"></div>
+    </div>
+
+    <!-- Load JavaScript files in correct order -->
+    <script src="/static/js/script.js"></script>
+    <script src="/static/js/flashcards.js"></script>
+    <script src="/static/js/citationGenerator.js"></script>
+    <script src="/static/js/webSearch.js"></script>
+</body>
+</html>
