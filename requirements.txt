@@ -1,0 +1,14 @@
+Flask==2.3.3
+Flask-CORS==4.0.0
+Flask-SocketIO==5.3.6
+python-socketio==5.8.0
+python-engineio==4.7.1
+groq==0.4.2
+sympy==1.12
+PyPDF2==3.0.1
+APScheduler==3.10.4
+Werkzeug==2.3.7
+gunicorn==21.2.0
+eventlet==0.33.3
+requests==2.31.0
+beautifulsoup4==4.12.2 
