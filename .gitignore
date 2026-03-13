@@ -1,0 +1,28 @@
+# API Keys and Secrets
+.env
+api_keys.json
+
+# Python local files
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+
+# Database files (Render will create a fresh one)
+*.db
+*.sqlite3
+
+# Uploads and temporary data
+uploads/
+temp/
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Flask/Render specific
+instance/
+.webassets-cache
