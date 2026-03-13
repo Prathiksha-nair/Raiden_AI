@@ -27,7 +27,8 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 # API Keys
 GNEWS_API_KEY = "c9b67ec1fd7152753492de6f37f459cf"
 OPENWEATHER_API_KEY = "20d24bd6501929128da43c9e11051030"
-GROQ_API_KEY = os.getenv('GROQ_API_KEY', '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')
+# Safely get the API key from the environment (Render will provide this)
+GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')
 
 # Database configuration
 DATABASE = 'raiden.db'
@@ -84,21 +85,35 @@ scheduler.start()
 
 # Configure upload folder
 UPLOAD_FOLDER = 'uploads'
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# ==========================================
+# RENDER DEPLOYMENT INITIALIZATION
+# ==========================================
+# Create necessary directories for Render deployment
+os.makedirs('static/js', exist_ok=True)
+os.makedirs('static/css', exist_ok=True)
+os.makedirs('static/images', exist_ok=True)
+os.makedirs('templates', exist_ok=True)
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# Initialize database globally so Gunicorn catches it
+try:
+    with app.app_context():
+        init_db()
+        print("Database initialized successfully on startup.")
+except Exception as e:
+    print(f"Error initializing database: {e}")
+# ==========================================
 
 # Initialize Groq client with current supported models
 client = Groq(api_key=GROQ_API_KEY)
 
 # Current supported models (Updated Oct 2025)
-# Allow override via env var GROQ_MODEL
 env_model_override = os.getenv('GROQ_MODEL')
 SUPPORTED_MODELS = [
     *( [env_model_override] if env_model_override else [] ),
-    # Groq current working model identifiers
     "llama-3.1-8b-instant",
-    # Note: llama-3.1-70b-versatile and llama-3.2-1b-preview have been decommissioned
 ]
 
 # Select the first working model
@@ -118,10 +133,12 @@ for model in SUPPORTED_MODELS:
         print(f"Model {model} not available: {str(e)}")
         continue
 
+# FIX: Prevent the server from crashing if the API key fails
 if not ACTIVE_MODEL:
-    raise RuntimeError("No supported models available. Check Groq's documentation for current models.")
-
-print(f"Using model: {ACTIVE_MODEL}")
+    print("WARNING: Groq API test failed or no valid key provided. Falling back to default model.")
+    ACTIVE_MODEL = "llama-3.1-8b-instant"
+else:
+    print(f"Using model: {ACTIVE_MODEL}")
 
 # Helper functions
 def generate_response(prompt, max_tokens=1024):
@@ -135,7 +152,7 @@ def generate_response(prompt, max_tokens=1024):
         return chat_completion.choices[0].message.content
     except Exception as e:
         print(f"Error generating response: {str(e)}")
-        return f"Sorry, I encountered an error processing your request. Please try again."
+        return f"Sorry, I encountered an error processing your request. Please ensure your Groq API key is valid."
 
 def extract_text_from_pdf(pdf_path):
     try:
@@ -207,7 +224,8 @@ def close_connection(exception):
 # Routes
 @app.route('/')
 def index():
-    return render_template('raiden.html')
+    # FIX: Changed to index.html to match standard structure
+    return render_template('index.html')
 
 @app.route('/<path:path>')
 def static_files(path):
@@ -623,7 +641,6 @@ def run_code():
                     'ConnectionRefusedError': ConnectionRefusedError,
                     'ConnectionResetError': ConnectionResetError,
                     'FileExistsError': FileExistsError,
-                    'FileNotFoundError': FileNotFoundError,
                     'IsADirectoryError': IsADirectoryError,
                     'NotADirectoryError': NotADirectoryError,
                     'InterruptedError': InterruptedError,
@@ -634,12 +651,8 @@ def run_code():
                     'ImportError': ImportError,
                     'ModuleNotFoundError': ModuleNotFoundError,
                     'LookupError': LookupError,
-                    'IndexError': IndexError,
-                    'KeyError': KeyError,
                     'ArithmeticError': ArithmeticError,
                     'FloatingPointError': FloatingPointError,
-                    'OverflowError': OverflowError,
-                    'ZeroDivisionError': ZeroDivisionError,
                     'BufferError': BufferError,
                     'ReferenceError': ReferenceError,
                     'SystemError': SystemError,
@@ -1043,7 +1056,7 @@ def handle_flashcards():
                 {text}
                 
                 Return a valid JSON array like this:
-                [{{"question": "What is photosynthesis?", "answer": "The process by which plants convert sunlight into energy."}}, {{"question": "What are the main components?", "answer": "Sunlight, water, and carbon dioxide."}}]
+                [{"question": "What is photosynthesis?", "answer": "The process by which plants convert sunlight into energy."}, {"question": "What are the main components?", "answer": "Sunlight, water, and carbon dioxide."}]
                 
                 Important: Ensure the JSON is properly closed with ] and all quotes are properly escaped."""
                 
@@ -1961,8 +1974,6 @@ def search_web():
     except Exception as e:
         return jsonify({'error': f'Web search failed: {str(e)}'}), 500
 
-# TODO: Integrate a real web search API (e.g., Bing, SerpAPI) for reliable results.
-
 # WebSocket events
 @socketio.on('connect')
 def handle_connect():
@@ -1981,12 +1992,15 @@ def handle_connect():
 def handle_disconnect():
     print(f'Client disconnected: {request.sid}')
 
+
+# Note: Render runs this file via Gunicorn, which ignores this block entirely.
+# All necessary startup code for Render is already above the routes!
 if __name__ == '__main__':
     # Disable automatic .env loading to avoid encoding issues
     os.environ['FLASK_SKIP_DOTENV'] = '1'
     
-    # Clear all data on startup for fresh memory
-    print("Starting Raiden AI with fresh memory...")
+    # Clear all data on startup for fresh memory (Local Only)
+    print("Starting Raiden AI locally...")
     
     # Try to delete database file if it exists to start fresh
     if os.path.exists('raiden.db'):
