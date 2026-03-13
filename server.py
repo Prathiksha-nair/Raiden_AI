@@ -106,42 +106,69 @@ except Exception as e:
     print(f"Error initializing database: {e}")
 # ==========================================
 
-# Initialize Groq client with current supported models
-client = Groq(api_key=GROQ_API_KEY)
+"""
+Groq client initialization
 
-# Current supported models (Updated Oct 2025)
-env_model_override = os.getenv('GROQ_MODEL')
-SUPPORTED_MODELS = [
-    *( [env_model_override] if env_model_override else [] ),
-    "llama-3.1-8b-instant",
-]
+On platforms like Render the GROQ_API_KEY environment variable might be
+missing. The Groq Python client raises immediately if api_key is an empty
+string, which would cause the whole Flask app to fail to import and the
+service to return "cannot handle this request".
 
-# Select the first working model
+To keep the backend (and UI) available even without a key, we only create
+the client when a non-empty key is present and gracefully degrade the
+chat features otherwise.
+"""
+client = None
 ACTIVE_MODEL = None
-for model in SUPPORTED_MODELS:
-    try:
-        # Test the model with a simple prompt
-        test_response = client.chat.completions.create(
-            messages=[{"role": "user", "content": "Hello"}],
-            model=model,
-            max_tokens=10
-        )
-        if test_response.choices:
-            ACTIVE_MODEL = model
-            break
-    except Exception as e:
-        print(f"Model {model} not available: {str(e)}")
-        continue
 
-# FIX: Prevent the server from crashing if the API key fails
-if not ACTIVE_MODEL:
-    print("WARNING: Groq API test failed or no valid key provided. Falling back to default model.")
-    ACTIVE_MODEL = "llama-3.1-8b-instant"
+if GROQ_API_KEY:
+    try:
+        client = Groq(api_key=GROQ_API_KEY)
+
+        # Current supported models (Updated Oct 2025)
+        env_model_override = os.getenv('GROQ_MODEL')
+        SUPPORTED_MODELS = [
+            *( [env_model_override] if env_model_override else [] ),
+            "llama-3.1-8b-instant",
+        ]
+
+        # Select the first working model
+        for model in SUPPORTED_MODELS:
+            try:
+                test_response = client.chat.completions.create(
+                    messages=[{"role": "user", "content": "Hello"}],
+                    model=model,
+                    max_tokens=10
+                )
+                if test_response.choices:
+                    ACTIVE_MODEL = model
+                    break
+            except Exception as e:
+                print(f"Model {model} not available: {str(e)}")
+                continue
+
+        if not ACTIVE_MODEL:
+            print("WARNING: Groq API test failed. Falling back to default model name.")
+            ACTIVE_MODEL = "llama-3.1-8b-instant"
+        else:
+            print(f"Using model: {ACTIVE_MODEL}")
+    except Exception as e:
+        print(f"WARNING: Failed to initialize Groq client: {e}")
+        client = None
+        ACTIVE_MODEL = None
 else:
-    print(f"Using model: {ACTIVE_MODEL}")
+    print("WARNING: GROQ_API_KEY not set. Chat features will be disabled.")
 
 # Helper functions
 def generate_response(prompt, max_tokens=1024):
+    if not client or not ACTIVE_MODEL:
+        # Graceful degradation when Groq is not configured on the server
+        return (
+            "Raiden AI's chat features are currently unavailable because the Groq API key "
+            "is not configured on the server. Please contact the administrator to set the "
+            "GROQ_API_KEY environment variable."
+        )
+
     try:
         chat_completion = client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
@@ -152,7 +179,10 @@ def generate_response(prompt, max_tokens=1024):
         return chat_completion.choices[0].message.content
     except Exception as e:
         print(f"Error generating response: {str(e)}")
-        return f"Sorry, I encountered an error processing your request. Please ensure your Groq API key is valid."
+        return (
+            "Sorry, I encountered an error while talking to the Groq API. "
+            "Please try again in a moment or check the API key configuration."
+        )
 
 def extract_text_from_pdf(pdf_path):
     try:
