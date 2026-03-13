@@ -2042,4 +2042,6 @@ if __name__ == '__main__':
         exit(1)
     
     print("Starting Raiden AI server...")
-    socketio.run(app, debug=True, port=5000)
+    # Use PORT from environment when available (e.g. Render-style), else default to 5000
+    port = int(os.getenv("PORT", "5000"))
+    socketio.run(app, host="0.0.0.0", debug=True, port=port)
