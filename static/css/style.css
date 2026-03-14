@@ -3127,3 +3127,108 @@ body {
     border-radius: 0.5px;
 }
 
+/* =========================================
+   MOBILE RESPONSIVENESS
+   ========================================= */
+
+/* Desktop view: Ensure hamburger button is hidden */
+@media (min-width: 993px) {
+    .mobile-menu-btn {
+        display: none !important;
+    }
+}
+
+/* Mobile view */
+@media (max-width: 992px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    /* Hide the sidebar off-screen by default */
+    .sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        height: 100vh;
+        width: 280px;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        box-shadow: 2px 0 15px rgba(0,0,0,0.5);
+    }
+    
+    /* When active, slide it in */
+    .sidebar.active {
+        left: 0;
+    }
+    
+    /* Style the hamburger button */
+    .mobile-menu-btn {
+        display: block !important;
+        background: none;
+        border: none;
+        color: var(--accent, #aa7eee); /* Or white, depending on your theme */
+        font-size: 24px;
+        cursor: pointer;
+        margin-right: 15px;
+    }
+
+    /* Make main content and chat take up full screen */
+    .main-content {
+        width: 100%;
+        height: 100vh;
+        margin-left: 0;
+    }
+
+    /* Make feature panels (Code, Math, Flashcards) cover the whole screen on mobile */
+    .feature-panel {
+        width: 100%;
+        height: 100vh;
+        right: -100%;
+        border-radius: 0; /* Remove rounded corners on mobile */
+        z-index: 999;
+    }
+    
+    .feature-panel.active {
+        right: 0;
+    }
+    
+    /* Stack welcome features vertically on small screens */
+    .welcome-features {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .welcome-feature {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    /* Fix input area for mobile typing */
+    .input-container {
+        padding: 10px;
+    }
+    .input-box {
+        padding: 8px 15px;
+    }
+}
+
+/* Dark Overlay for when sidebar is open on mobile */
+.mobile-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    z-index: 990;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-overlay.active {
+    display: block;
+    opacity: 1;
+}
