@@ -1,4 +1,9 @@
+import eventlet
+eventlet.monkey_patch() # This MUST be the first thing in the file
+
 from flask import Flask, request, jsonify, send_from_directory, render_template, g, make_response
+from flask_cors import CORS
+# ... rest of your importsfrom flask import Flask, request, jsonify, send_from_directory, render_template, g, make_response
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os
