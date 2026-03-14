@@ -29,7 +29,9 @@ function initFlashcards() {
 }
 
 // Flip the flashcard
-function flipFlashcard() {
+function flipFlashcard(e) {
+    // Prevent flipping if clicking the delete button
+    if (e && e.target.closest('.delete-flashcard-btn')) return;
     flashcard.classList.toggle('flipped');
 }
 
@@ -104,10 +106,10 @@ function updateFlashcardView() {
     // Clear existing delete button
     actions.innerHTML = '';
     
-    // Add new delete button with current index
+    // Add new delete button with current Database ID
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'delete-flashcard-btn';
-    deleteBtn.setAttribute('data-card-id', flashcardIndex);
+    deleteBtn.setAttribute('data-card-id', currentCard.id);
     deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
     deleteBtn.addEventListener('click', deleteCurrentFlashcard);
     
@@ -194,9 +196,8 @@ function generateFlashcards() {
             throw new Error(data.error);
         }
         if (data.flashcards) {
-            flashcards = data.flashcards;
-            flashcardIndex = 0;
-            updateFlashcardView();
+            // Reload all flashcards to merge existing ones with the newly generated ones
+            loadFlashcards();
             showNotification('Successfully generated flashcards!', 'success');
         }
     })
@@ -213,49 +214,34 @@ function generateFlashcards() {
 // Delete current flashcard
 function deleteCurrentFlashcard(e) {
     e.stopPropagation();
-    const cardId = e.currentTarget.dataset.cardId;
+    const cardId = e.currentTarget.dataset.cardId; // This is now the true DB ID
     
     if (confirm('Are you sure you want to delete this flashcard?')) {
         // Show loading state
         flashcard.innerHTML = '<div class="flashcard-front">Deleting...</div>';
         
-        // Simulate API call with timeout (replace with actual fetch in production)
-        setTimeout(() => {
-            // Remove from local array
-            flashcards.splice(cardId, 1);
-            
-            // Adjust index if needed
-            if (flashcardIndex >= flashcards.length && flashcards.length > 0) {
-                flashcardIndex = flashcards.length - 1;
-            }
-            
-            if (flashcards.length === 0) {
-                showEmptyFlashcardState();
-            } else {
-                updateFlashcardView();
-            }
-            
-            showNotification('Flashcard deleted successfully', 'success');
-        }, 500);
-        
-        /*
-        // Production version with actual API call:
+        // Execute the real API call
         fetch(`/flashcards/${cardId}`, {
             method: 'DELETE'
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                flashcards.splice(cardId, 1);
+                // Remove from local array
+                flashcards.splice(flashcardIndex, 1);
+                
+                // Adjust index if needed
                 if (flashcardIndex >= flashcards.length && flashcards.length > 0) {
                     flashcardIndex = flashcards.length - 1;
                 }
+                
                 if (flashcards.length === 0) {
                     showEmptyFlashcardState();
                 } else {
                     updateFlashcardView();
                 }
-                showNotification('Flashcard deleted successfully');
+                
+                showNotification('Flashcard deleted successfully', 'success');
             } else {
                 throw new Error(data.error || 'Failed to delete flashcard');
             }
@@ -263,9 +249,8 @@ function deleteCurrentFlashcard(e) {
         .catch(error => {
             console.error('Error deleting flashcard:', error);
             showError(error.message);
-            updateFlashcardView();
+            updateFlashcardView(); // Restore view if failed
         });
-        */
     }
 }
 
@@ -305,5 +290,5 @@ function showError(message) {
     }, 5000);
 }
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', initFlashcards);
+// REMOVED: document.addEventListener('DOMContentLoaded', initFlashcards);
+// It is already initialized globally inside script.js!
