@@ -3,8 +3,6 @@ eventlet.monkey_patch() # This MUST be the first thing in the file
 
 from flask import Flask, request, jsonify, send_from_directory, render_template, g, make_response
 from flask_cors import CORS
-# ... rest of your importsfrom flask import Flask, request, jsonify, send_from_directory, render_template, g, make_response
-from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os
 import datetime
@@ -1065,6 +1063,7 @@ def handle_flashcards():
                 return jsonify({"error": "No text provided"}), 400
             
             try:
+                # FIX: Double the curly braces {{ }} in the JSON example so the f-string doesn't break
                 prompt = f"""Convert the following study notes into a list of 5-10 flashcards in JSON format. 
                 Each flashcard should have a clear question and a concise answer.
                 Return ONLY a valid JSON array with no additional text, explanations, or formatting.
@@ -1073,7 +1072,7 @@ def handle_flashcards():
                 {text}
                 
                 Return a valid JSON array like this:
-                [{"question": "What is photosynthesis?", "answer": "The process by which plants convert sunlight into energy."}, {"question": "What are the main components?", "answer": "Sunlight, water, and carbon dioxide."}]
+                [{{ "question": "What is photosynthesis?", "answer": "The process by which plants convert sunlight into energy." }}, {{ "question": "What are the main components?", "answer": "Sunlight, water, and carbon dioxide." }}]
                 
                 Important: Ensure the JSON is properly closed with ] and all quotes are properly escaped."""
                 
