@@ -65,13 +65,43 @@ document.addEventListener('DOMContentLoaded', function() {
     initWebSocket();
 
     // ===== Sidebar Navigation =====
+    // ===== Sidebar Navigation =====
     function initSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        
+        // Create the dark overlay for mobile
+        const overlay = document.createElement('div');
+        overlay.className = 'mobile-overlay';
+        document.body.appendChild(overlay);
+
+        // Open sidebar on mobile
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebar.classList.add('active');
+                overlay.classList.add('active');
+            });
+        }
+
+        // Close sidebar when clicking the dark overlay
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        // Handle navigation item clicks
         navItems.forEach(item => {
             item.addEventListener('click', () => {
                 navItems.forEach(navItem => navItem.classList.remove('active'));
                 item.classList.add('active');
                 const panelId = item.getAttribute('data-panel') + '-panel';
                 showPanel(panelId);
+                
+                // Auto-close sidebar on mobile after clicking a link
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                }
             });
         });
 
