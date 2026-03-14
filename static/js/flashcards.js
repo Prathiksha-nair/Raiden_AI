@@ -1,4 +1,4 @@
-// flashcards.js - Complete implementation with working deletion
+// flashcards.js - Complete implementation with working deletion, cache bypass, and instant UI refresh
 
 // DOM Elements
 const flashcard = document.getElementById('flashcard');
@@ -131,11 +131,12 @@ function handleKeyboardNavigation(e) {
     }
 }
 
-// Load flashcards from server
+// Load flashcards from server (Fixed browser caching issue)
 function loadFlashcards() {
     flashcard.innerHTML = '<div class="flashcard-front">Loading flashcards...</div>';
     
-    fetch('/flashcards')
+    // Added a timestamp to the URL to force the browser to get fresh data every time
+    fetch(`/flashcards?t=${new Date().getTime()}`)
         .then(response => response.json())
         .then(data => {
             if (data.flashcards && data.flashcards.length > 0) {
@@ -177,7 +178,7 @@ function showErrorFlashcardState() {
     flashcard.classList.remove('flipped');
 }
 
-// Generate flashcards from notes
+// Generate flashcards from notes (Fixed UI refresh issue)
 function generateFlashcards() {
     const notes = prompt('Enter your study notes to generate flashcards from:');
     if (!notes) return;
@@ -195,10 +196,20 @@ function generateFlashcards() {
         if (data.error) {
             throw new Error(data.error);
         }
-        if (data.flashcards) {
-            // Reload all flashcards to merge existing ones with the newly generated ones
-            loadFlashcards();
-            showNotification('Successfully generated flashcards!', 'success');
+        if (data.flashcards && data.flashcards.length > 0) {
+            // Instantly inject the new flashcards into our current array
+            if (flashcards.length === 0) {
+                flashcards = data.flashcards;
+                flashcardIndex = 0;
+            } else {
+                // Jump to the first newly added flashcard
+                flashcardIndex = flashcards.length; 
+                flashcards = flashcards.concat(data.flashcards);
+            }
+            
+            // Force the UI to update immediately
+            updateFlashcardView();
+            showNotification(`Successfully generated ${data.flashcards.length} flashcards!`, 'success');
         }
     })
     .catch(error => {
@@ -289,6 +300,3 @@ function showError(message) {
         setTimeout(() => notification.remove(), 500);
     }, 5000);
 }
-
-// REMOVED: document.addEventListener('DOMContentLoaded', initFlashcards);
-// It is already initialized globally inside script.js!
