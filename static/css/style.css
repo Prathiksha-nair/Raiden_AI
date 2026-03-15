@@ -3179,21 +3179,28 @@ body {
         margin-left: 0;
         display: flex;
         flex-direction: column;
+        overflow: hidden;
+    }
+
+    .header {
+        flex-shrink: 0;
     }
 
     .chat-container {
         flex-grow: 1;
         overflow-y: auto;
+        padding-bottom: 20px;
     }
 
     /* Keep the input bar locked to the bottom on phones */
     .input-container {
-        position: sticky;
-        bottom: 0;
-        background: #1e1e2f; /* Make sure this matches your dark background color */
-        z-index: 100;
+        flex-shrink: 0; /* Prevents input bar from squishing */
+        position: relative; /* Remove sticky, let flexbox handle it */
+        background: #110f1a; /* Ensure this matches your app's dark background */
         padding: 10px;
-        padding-bottom: max(10px, env(safe-area-inset-bottom)); /* iPhone notch safe area */
+        padding-bottom: max(15px, env(safe-area-inset-bottom));
+        border-top: 1px solid rgba(170, 126, 238, 0.2);/
+        
     }
 
     .input-box {
