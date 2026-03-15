@@ -2195,8 +2195,8 @@ body {
         height: 100%;
         width: 100%;
     }
-    
-    /* --- SIDEBAR FIXES (Added Text Labels) --- */
+
+    /* --- SIDEBAR FIXES --- */
     .sidebar {
         position: fixed;
         left: -100%;
@@ -2207,6 +2207,12 @@ body {
         transition: left 0.3s ease;
         box-shadow: 2px 0 15px rgba(0,0,0,0.5);
         overflow-y: auto;
+        /* CRITICAL: Explicit solid dark background so it's never transparent */
+        background-color: #1e1e2f; 
+    }
+
+    .sidebar.active {
+        left: 0;
     }
 
     .close-sidebar-btn {
@@ -2215,26 +2221,27 @@ body {
 
     .nav-item {
         justify-content: flex-start;
-        padding: 12px 20px;
+        padding: 15px 20px;
     }
 
     .nav-item .tooltip {
         position: relative;
-        opacity: 1;
-        visibility: visible;
-        display: block;
-        background: transparent;
-        color: inherit;
+        opacity: 1 !important;
+        visibility: visible !important;
+        display: block !important;
+        background: transparent !important;
+        /* CRITICAL: Force text to be white and wrap properly */
+        color: #ffffff !important; 
         box-shadow: none;
         padding: 0;
-        margin-left: 10px;
+        margin-left: 15px;
         font-size: 16px;
         transform: none;
         pointer-events: auto;
         white-space: normal;
         line-height: 1.3;
     }
-    
+
     .mobile-menu-btn {
         display: block !important;
         background: none;
@@ -2261,18 +2268,25 @@ body {
     .chat-container {
         flex: 1;
         overflow-y: auto;
-        padding-bottom: 90px; 
+        padding-bottom: 100px;
+        display: block; /* Ensures natural scrolling */
     }
 
-    /* --- WELCOME SCREEN FIXES (Centered) --- */
+    /* --- WELCOME SCREEN FIXES (Bolt cutoff fix) --- */
     .welcome-screen {
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        padding: 40px 15px 20px 15px;
-        margin-top: auto;
-        margin-bottom: auto;
+        /* Replaced 'auto' margins with explicit padding to prevent pushing the bolt up */
+        padding: 30px 15px 40px 15px; 
+        margin: 0 auto;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .welcome-icon {
+        margin-bottom: 15px; 
     }
 
     .welcome-features {
@@ -2296,20 +2310,20 @@ body {
         gap: 10px;
     }
 
-    /* --- INPUT BAR FIXES (Send Button) --- */
+    /* --- INPUT BAR FIXES --- */
     .input-container {
         position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
-        background: #110f1a; 
+        background: #110f1a;
         padding: 10px;
-        padding-bottom: max(15px, env(safe-area-inset-bottom)); 
+        padding-bottom: max(15px, env(safe-area-inset-bottom));
         z-index: 100;
         box-sizing: border-box;
         border-top: 1px solid rgba(170, 126, 238, 0.2);
     }
-    
+
     .input-box {
         display: flex;
         align-items: flex-end;
@@ -2340,31 +2354,11 @@ body {
         width: 100%;
         height: 100%;
         right: -100%;
-        border-radius: 0; 
+        border-radius: 0;
         z-index: 999;
     }
-    
+
     .feature-panel.active {
         right: 0;
     }
-}
-
-/* Dark Overlay for when sidebar is open on mobile */
-.mobile-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(3px);
-    z-index: 990;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.mobile-overlay.active {
-    display: block;
-    opacity: 1;
 }
