@@ -65,16 +65,18 @@ document.addEventListener('DOMContentLoaded', function() {
     initWebSocket();
 
     // ===== Sidebar Navigation =====
-    // ===== Sidebar Navigation =====
     function initSidebar() {
-        const sidebar = document.querySelector('.sidebar');
+        // Notice we don't declare 'const sidebar' here because it's already declared at the top of the file!
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const closeSidebarBtn = document.getElementById('close-sidebar-btn');
         
         // Create the dark overlay for mobile
-        const overlay = document.createElement('div');
-        overlay.className = 'mobile-overlay';
-        document.body.appendChild(overlay);
+        let overlay = document.querySelector('.mobile-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'mobile-overlay';
+            document.body.appendChild(overlay);
+        }
 
         // Open sidebar on mobile
         if (mobileMenuBtn) {
@@ -84,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // NEW: Close sidebar when clicking the X button
+        // Close sidebar when clicking the X button
         if (closeSidebarBtn) {
             closeSidebarBtn.addEventListener('click', () => {
                 sidebar.classList.remove('active');
