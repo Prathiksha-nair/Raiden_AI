@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function initSidebar() {
         const sidebar = document.querySelector('.sidebar');
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
         
         // Create the dark overlay for mobile
         const overlay = document.createElement('div');
@@ -80,6 +81,13 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileMenuBtn.addEventListener('click', () => {
                 sidebar.classList.add('active');
                 overlay.classList.add('active');
+            });
+        }
+
+        if (closeSidebarBtn) {
+            closeSidebarBtn.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
             });
         }
 
