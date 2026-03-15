@@ -2168,6 +2168,79 @@ body {
         height: 38px;
         font-size: 14px;
     }
+    .planner-header {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .planner-nav {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        gap: 5px;
+    }
+    
+    .planner-nav-btn {
+        flex: 1;
+        margin: 0;
+        padding: 8px 5px;
+        font-size: 14px;
+        text-align: center;
+    }
+    
+    .add-task-btn {
+        width: 100%;
+    }
+    
+    .planner-stats {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px;
+        gap: 10px;
+    }
+    
+    .stat-card {
+        flex: 1;
+        background: rgba(170, 126, 238, 0.1); /* Subtle purple tint */
+        border: 1px solid rgba(170, 126, 238, 0.2);
+        padding: 15px 10px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--accent, #aa7eee);
+    }
+
+    .task-item {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 15px;
+        margin: 10px 15px;
+    }
+    
+    .task-actions {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding-top: 10px;
+        margin-top: 5px;
+    }
+
+    /* Fix the Add Task Modal for mobile */
+    .task-modal .modal-content {
+        width: 90%;
+        max-width: 350px;
+        margin: 20px auto;
+        padding: 20px;
+    }
 }
 
 /* =========================================
@@ -2219,27 +2292,34 @@ body {
         display: block !important;
     }
 
+   /* --- SIDEBAR FIXES --- */
     .nav-item {
+        display: flex;
+        align-items: center;
         justify-content: flex-start;
         padding: 15px 20px;
+        gap: 15px; /* Adds perfect, even spacing between icon and text */
+    }
+
+    .nav-item i {
+        width: auto;
+        margin: 0;
+        font-size: 20px;
     }
 
     .nav-item .tooltip {
-        position: relative;
+        position: static !important; /* CRITICAL: Removes desktop absolute positioning */
         opacity: 1 !important;
         visibility: visible !important;
         display: block !important;
         background: transparent !important;
-        /* CRITICAL: Force text to be white and wrap properly */
         color: #ffffff !important; 
-        box-shadow: none;
-        padding: 0;
-        margin-left: 15px;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important; /* Removes the excessive gap */
         font-size: 16px;
-        transform: none;
-        pointer-events: auto;
+        transform: none !important;
         white-space: normal;
-        line-height: 1.3;
     }
 
     .mobile-menu-btn {
