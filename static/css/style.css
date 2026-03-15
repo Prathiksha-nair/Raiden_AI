@@ -3140,7 +3140,6 @@ body {
 
 /* Mobile view */
 @media (max-width: 992px) {
-    /* 1. Lock the body so the mobile URL bar doesn't push content off-screen */
     html, body {
         height: 100%;
         width: 100%;
@@ -3154,13 +3153,13 @@ body {
         width: 100%;
     }
     
-    /* 2. Sidebar off-screen */
+    /* --- SIDEBAR FIXES (Added Text Labels) --- */
     .sidebar {
         position: fixed;
         left: -100%;
         top: 0;
         height: 100%;
-        width: 280px;
+        width: 260px; /* Made slightly wider to fit text nicely */
         z-index: 1000;
         transition: left 0.3s ease;
         box-shadow: 2px 0 15px rgba(0,0,0,0.5);
@@ -3168,6 +3167,33 @@ body {
     
     .sidebar.active {
         left: 0;
+    }
+    
+    .nav-item {
+        justify-content: flex-start; /* Align items to the left */
+        padding: 15px 25px;
+    }
+
+    .nav-item i {
+        font-size: 20px;
+        width: 30px; /* Give icons a fixed width so text aligns perfectly */
+        text-align: center;
+    }
+
+    .nav-item .tooltip {
+        /* Un-hide the tooltip and make it a normal label on mobile */
+        position: relative;
+        opacity: 1;
+        visibility: visible;
+        display: block;
+        background: transparent;
+        color: inherit;
+        box-shadow: none;
+        padding: 0;
+        margin-left: 15px;
+        font-size: 16px;
+        transform: none;
+        pointer-events: auto;
     }
     
     .mobile-menu-btn {
@@ -3180,7 +3206,6 @@ body {
         margin-right: 15px;
     }
 
-    /* 3. Main content takes exactly 100% of available screen */
     .main-content {
         width: 100%;
         height: 100%;
@@ -3194,33 +3219,82 @@ body {
         flex-shrink: 0;
     }
 
-    /* 4. Chat scrolls, but leaves room for the input bar */
     .chat-container {
         flex: 1;
         overflow-y: auto;
-        padding-bottom: 90px; /* Space for the input bar so it doesn't cover messages */
+        padding-bottom: 90px; 
     }
 
-    /* 5. Bulletproof Input Bar locked to the bottom */
+    /* --- WELCOME SCREEN FIXES (Centered) --- */
+    .welcome-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px 15px;
+    }
+
+    .welcome-features {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: 15px;
+    }
+
+    .welcome-feature {
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+    }
+
+    .quick-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    /* --- INPUT BAR FIXES (Send Button) --- */
     .input-container {
         position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
-        background: #110f1a; /* Assuming your dark theme background color */
+        background: #110f1a; 
         padding: 10px;
-        padding-bottom: max(15px, env(safe-area-inset-bottom)); /* iPhone notch safe area */
+        padding-bottom: max(15px, env(safe-area-inset-bottom)); 
         z-index: 100;
         box-sizing: border-box;
         border-top: 1px solid rgba(170, 126, 238, 0.2);
     }
     
     .input-box {
+        display: flex;
+        align-items: flex-end; /* Keeps buttons at the bottom if text wraps */
         width: 100%;
         box-sizing: border-box;
+        padding: 8px 12px;
     }
 
-    /* Make feature panels cover the whole screen on mobile */
+    #message-input {
+        flex: 1;
+        min-width: 0; /* CRITICAL: Stops the textarea from pushing the send button off screen */
+    }
+
+    .input-actions {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0; /* Prevents the send button from being squished */
+        margin-left: 10px;
+    }
+
+    .send-btn {
+        display: flex !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
     .feature-panel {
         width: 100%;
         height: 100%;
@@ -3231,16 +3305,5 @@ body {
     
     .feature-panel.active {
         right: 0;
-    }
-    
-    .welcome-features {
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .welcome-feature {
-        width: 100%;
-        max-width: 300px;
     }
 }
