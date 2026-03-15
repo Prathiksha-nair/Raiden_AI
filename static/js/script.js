@@ -64,6 +64,9 @@ document.addEventListener('DOMContentLoaded', function() {
     initAttendanceTracker();
     initWebSocket();
 
+    // NEW: Ask for notification permissions
+    requestNotificationPermission();
+
     // ===== Sidebar Navigation =====
     function initSidebar() {
         // Notice we don't declare 'const sidebar' here because it's already declared at the top of the file!
@@ -2138,14 +2141,19 @@ int main() {
         socket.on('task_reminder', (data) => {
             console.log('Received reminder:', data);
             if (data.is_due) {
+                // In-app notification
                 showDueNotification(`Task is due now: "${data.task}"`, data.task_id);
+                // NEW: System notification
+                sendSystemNotification("Raiden AI - Task Due!", `It's time to work on: ${data.task}`);
             } else {
+                // In-app notification
                 const dueTime = new Date(data.due_date);
                 const timeString = dueTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 showNotification(`Reminder: "${data.task}" is due at ${timeString}`, data.task_id);
+                // NEW: System notification
+                sendSystemNotification("Raiden AI - Upcoming Task", `Reminder: "${data.task}" is due at ${timeString}`);
             }
         });
-    }
 
     function showTaskNotification(message, type = 'info') {
         const notification = document.createElement('div');
@@ -2300,3 +2308,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+// ===== System Notifications (Browser Push) =====
+function requestNotificationPermission() {
+    if (!("Notification" in window)) {
+        console.log("This browser does not support system notifications.");
+    } else if (Notification.permission === "default") {
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                console.log("System notification permission granted!");
+            }
+        });
+    }
+}
+
+function sendSystemNotification(title, bodyText) {
+    // Check if permissions are granted before trying to send
+    if ("Notification" in window && Notification.permission === "granted") {
+        const notification = new Notification(title, {
+            body: bodyText,
+            icon: '/static/images/logo.png', // Uses your custom logo
+            badge: '/static/images/logo.png'
+        });
+        
+        // If the user clicks the notification, bring the Raiden tab to the front
+        notification.onclick = function() {
+            window.focus();
+            this.close();
+        };
+    }
+}
