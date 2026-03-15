@@ -64,12 +64,11 @@ document.addEventListener('DOMContentLoaded', function() {
     initAttendanceTracker();
     initWebSocket();
 
-    // NEW: Ask for notification permissions
+    // Request notification permissions on load
     requestNotificationPermission();
 
     // ===== Sidebar Navigation =====
     function initSidebar() {
-        // Notice we don't declare 'const sidebar' here because it's already declared at the top of the file!
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const closeSidebarBtn = document.getElementById('close-sidebar-btn');
         
@@ -2143,14 +2142,17 @@ int main() {
             if (data.is_due) {
                 // In-app notification
                 showDueNotification(`Task is due now: "${data.task}"`, data.task_id);
-                // NEW: System notification
+                // System notification
                 sendSystemNotification("Raiden AI - Task Due!", `It's time to work on: ${data.task}`);
             } else {
                 // In-app notification
                 const dueTime = new Date(data.due_date);
                 const timeString = dueTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                showNotification(`Reminder: "${data.task}" is due at ${timeString}`, data.task_id);
-                // NEW: System notification
+                
+                // FIX: Change 'data.task_id' to 'info' so it styles correctly
+                showNotification(`Reminder: "${data.task}" is due at ${timeString}`, 'info'); 
+                
+                // System notification
                 sendSystemNotification("Raiden AI - Upcoming Task", `Reminder: "${data.task}" is due at ${timeString}`);
             }
         });
