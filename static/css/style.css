@@ -3140,79 +3140,92 @@ body {
 
 /* Mobile view */
 @media (max-width: 992px) {
+    /* 1. Lock the body so the mobile URL bar doesn't push content off-screen */
+    html, body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        position: fixed;
+    }
+
     .container {
         flex-direction: column;
+        height: 100%;
+        width: 100%;
     }
     
-    /* Hide the sidebar off-screen by default */
+    /* 2. Sidebar off-screen */
     .sidebar {
         position: fixed;
         left: -100%;
         top: 0;
-        height: 100vh;
+        height: 100%;
         width: 280px;
         z-index: 1000;
         transition: left 0.3s ease;
         box-shadow: 2px 0 15px rgba(0,0,0,0.5);
     }
     
-    /* When active, slide it in */
     .sidebar.active {
         left: 0;
     }
     
-    /* Style the hamburger button */
     .mobile-menu-btn {
         display: block !important;
         background: none;
         border: none;
-        color: var(--accent, #aa7eee); /* Or white, depending on your theme */
+        color: var(--accent, #aa7eee);
         font-size: 24px;
         cursor: pointer;
         margin-right: 15px;
     }
 
-    /* Make main content and chat take up full screen */
+    /* 3. Main content takes exactly 100% of available screen */
     .main-content {
         width: 100%;
-        height: 100dvh;
+        height: 100%;
         margin-left: 0;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
+        position: relative;
     }
 
     .header {
         flex-shrink: 0;
     }
 
+    /* 4. Chat scrolls, but leaves room for the input bar */
     .chat-container {
-        flex-grow: 1;
+        flex: 1;
         overflow-y: auto;
-        padding-bottom: 20px;
+        padding-bottom: 90px; /* Space for the input bar so it doesn't cover messages */
     }
 
-    /* Keep the input bar locked to the bottom on phones */
+    /* 5. Bulletproof Input Bar locked to the bottom */
     .input-container {
-        flex-shrink: 0; /* Prevents input bar from squishing */
-        position: relative; /* Remove sticky, let flexbox handle it */
-        background: #110f1a; /* Ensure this matches your app's dark background */
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: #110f1a; /* Assuming your dark theme background color */
         padding: 10px;
-        padding-bottom: max(15px, env(safe-area-inset-bottom));
-        border-top: 1px solid rgba(170, 126, 238, 0.2);/
-        
+        padding-bottom: max(15px, env(safe-area-inset-bottom)); /* iPhone notch safe area */
+        z-index: 100;
+        box-sizing: border-box;
+        border-top: 1px solid rgba(170, 126, 238, 0.2);
     }
-
+    
     .input-box {
-        padding: 8px 15px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
-    /* Make feature panels (Code, Math, Flashcards) cover the whole screen on mobile */
+    /* Make feature panels cover the whole screen on mobile */
     .feature-panel {
         width: 100%;
-        height: 100dvh;
+        height: 100%;
         right: -100%;
-        border-radius: 0; /* Remove rounded corners on mobile */
+        border-radius: 0; 
         z-index: 999;
     }
     
@@ -3220,7 +3233,6 @@ body {
         right: 0;
     }
     
-    /* Stack welcome features vertically on small screens */
     .welcome-features {
         flex-direction: column;
         align-items: center;
@@ -3231,32 +3243,4 @@ body {
         width: 100%;
         max-width: 300px;
     }
-    
-    /* Fix input area for mobile typing */
-    .input-container {
-        padding: 10px;
-    }
-    .input-box {
-        padding: 8px 15px;
-    }
-}
-
-/* Dark Overlay for when sidebar is open on mobile */
-.mobile-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(3px);
-    z-index: 990;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.mobile-overlay.active {
-    display: block;
-    opacity: 1;
 }
