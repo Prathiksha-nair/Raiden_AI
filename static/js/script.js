@@ -2154,6 +2154,7 @@ int main() {
                 sendSystemNotification("Raiden AI - Upcoming Task", `Reminder: "${data.task}" is due at ${timeString}`);
             }
         });
+    }
 
     function showTaskNotification(message, type = 'info') {
         const notification = document.createElement('div');
@@ -2267,6 +2268,7 @@ int main() {
         }
     });
 });
+
 // Add this at the very bottom of script.js
 document.addEventListener('DOMContentLoaded', function() {
     const quickActionBtns = document.querySelectorAll('.quick-action-btn');
@@ -2308,6 +2310,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
 // ===== System Notifications (Browser Push) =====
 function requestNotificationPermission() {
     if (!("Notification" in window)) {
