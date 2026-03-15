@@ -335,7 +335,7 @@ body {
     animation: fadeIn 0.3s ease;
     line-height: 1.6;
     font-size: 15px;
-    margin-bottom: 25px; /* Increased for better spacing */
+    margin-bottom: 25px;
 }
 
 @keyframes fadeIn {
@@ -984,11 +984,19 @@ body {
     box-shadow: 0 6px 20px rgba(102, 51, 174, 0.4);
 }
 
+/* --- ADDED: Attendance Buttons Gap Fix --- */
+.attendance-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    width: 100%;
+}
+
 /* HORIZONTAL STATS LAYOUT FOR PLANNER & ATTENDANCE */
 .planner-stats, .attendance-stats {
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap; /* CRITICAL: Forces elements to stay in a row */
+    flex-wrap: nowrap;
     justify-content: space-between;
     gap: 10px;
     width: 100%;
@@ -999,10 +1007,10 @@ body {
 
 .stat-card {
     flex: 1;
-    min-width: 0; /* CRITICAL: Prevents cards from blowing out of the container */
+    min-width: 0;
     background: rgba(170, 126, 238, 0.1);
     border: 1px solid rgba(170, 126, 238, 0.2);
-    padding: 15px 5px; /* Reduced side padding to fit text nicely */
+    padding: 15px 5px;
     border-radius: 10px;
     text-align: center;
 }
@@ -1068,7 +1076,6 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(102, 51, 174, 0.4);
 }
-/* --- END ADDED --- */
 
 .task-item {
     background: rgba(42, 34, 99, 0.3);
@@ -1156,6 +1163,106 @@ body {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(170, 126, 238, 0.3);
 }
+
+/* --- ADDED: Modal Content Styling for Inputs and Buttons --- */
+.modal-content h3 {
+    color: var(--accent);
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.modal-content .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.modal-content label {
+    font-size: 14px;
+    color: var(--text-light);
+    opacity: 0.9;
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: rgba(42, 34, 99, 0.3);
+    border: 1px solid rgba(170, 126, 238, 0.3);
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    outline: none;
+    font-family: inherit;
+    box-sizing: border-box;
+    color-scheme: dark; /* CRITICAL: Makes the native date picker calendar icon dark */
+}
+
+.modal-content input:focus,
+.modal-content select:focus,
+.modal-content textarea:focus {
+    border-color: var(--accent);
+    background: rgba(42, 34, 99, 0.5);
+}
+
+.modal-content textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 25px;
+    width: 100%;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.confirm-btn, #saveTask, #save-attendance {
+    background: var(--bg-gradient);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 51, 174, 0.3);
+}
+
+.confirm-btn:hover, #saveTask:hover, #save-attendance:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 51, 174, 0.4);
+}
+
+.delete-btn {
+    background: rgba(255, 71, 87, 0.1);
+    color: #ff4757;
+    border: 1px solid rgba(255, 71, 87, 0.3);
+    margin-right: auto; /* Pushes the delete button to the far left */
+}
+
+.delete-btn:hover {
+    background: rgba(255, 71, 87, 0.2);
+}
+/* --- END MODAL STYLES --- */
 
 /* About panel */
 .about-content {
@@ -2168,7 +2275,6 @@ body {
         font-size: 20px;
     }
 
-    /* CRITICAL FIX: Removed boxes around tooltip text on mobile */
     .nav-item .tooltip {
         position: static !important; 
         opacity: 1 !important;
