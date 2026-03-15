@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
+        // NEW: Close sidebar when clicking the X button
         if (closeSidebarBtn) {
             closeSidebarBtn.addEventListener('click', () => {
                 sidebar.classList.remove('active');
