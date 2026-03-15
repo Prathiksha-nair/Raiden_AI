@@ -2232,3 +2232,44 @@ int main() {
         }
     });
 });
+// Add this at the very bottom of script.js
+document.addEventListener('DOMContentLoaded', function() {
+    const quickActionBtns = document.querySelectorAll('.quick-action-btn');
+    
+    if (quickActionBtns.length >= 4) {
+        // Button 1: Solve Math
+        quickActionBtns[0].addEventListener('click', () => {
+            // Click the Math nav item
+            document.querySelector('.nav-item[data-panel="math"]').click();
+            // Wait for panel to open, then insert equation and solve
+            setTimeout(() => {
+                const mathInput = document.getElementById('math-input');
+                const solveBtn = document.querySelector('#math-panel .run-code');
+                if (mathInput && solveBtn) {
+                    mathInput.value = '2x + 5 = 15';
+                    solveBtn.click();
+                }
+            }, 300);
+        });
+
+        // Button 2: Generate APA citation
+        quickActionBtns[1].addEventListener('click', () => {
+            document.querySelector('.nav-item[data-panel="citations"]').click();
+        });
+
+        // Button 3: Create study plan
+        quickActionBtns[2].addEventListener('click', () => {
+            document.querySelector('.nav-item[data-panel="planner"]').click();
+        });
+
+        // Button 4: Explain quantum physics
+        quickActionBtns[3].addEventListener('click', () => {
+            const messageInput = document.getElementById('message-input');
+            const sendBtn = document.getElementById('send-btn');
+            if (messageInput && sendBtn) {
+                messageInput.value = 'Explain quantum physics in simple terms.';
+                sendBtn.click();
+            }
+        });
+    }
+});
