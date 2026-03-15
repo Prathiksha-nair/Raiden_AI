@@ -129,6 +129,7 @@ body {
     color: var(--accent);
 }
 
+/* Tooltip (Desktop) */
 .nav-item .tooltip {
     position: absolute;
     left: 70px;
@@ -232,6 +233,9 @@ body {
     width: 28px;
     height: 28px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .notification-btn {
@@ -254,7 +258,7 @@ body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 25px; /* Increased gap for breathing room */
+    gap: 25px; /* Increased gap for proper spacing */
     background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(170, 126, 238, 0.02)" d="M0,0 L100,0 L100,100 L0,100 Z" /><path fill="none" stroke="rgba(170, 126, 238, 0.05)" stroke-width="0.5" d="M0,50 L100,50 M50,0 L50,100" /></svg>');
     background-size: 50px 50px;
 }
@@ -267,7 +271,12 @@ body {
     animation: fadeIn 0.3s ease;
     line-height: 1.6;
     font-size: 15px;
-    margin-bottom: 10px; /* Extra space below messages */
+    margin-bottom: 15px; /* Added spacing between individual messages */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .user-message {
@@ -275,6 +284,7 @@ body {
     background: var(--bg-gradient);
     color: white;
     border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 15px rgba(102, 51, 174, 0.3);
 }
 
 .ai-message {
@@ -282,6 +292,47 @@ body {
     background: rgba(42, 34, 99, 0.4);
     border: 1px solid rgba(170, 126, 238, 0.2);
     border-bottom-left-radius: 4px;
+    backdrop-filter: blur(10px);
+}
+
+.ai-message h1, .ai-message h2, .ai-message h3 { color: var(--accent); margin: 15px 0 10px 0; font-weight: 600; }
+.ai-message p { margin-bottom: 10px; }
+.ai-message ul, .ai-message ol { margin-left: 20px; margin-bottom: 15px; }
+.ai-message li { margin-bottom: 5px; }
+.ai-message strong { color: var(--accent); }
+.ai-message code { background: rgba(170, 126, 238, 0.15); color: #d4b3ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+.ai-message pre { background: #1e1e2f; padding: 12px; border-radius: 8px; overflow-x: auto; margin-bottom: 15px; border: 1px solid rgba(170, 126, 238, 0.2); }
+.ai-message pre code { background: none; color: inherit; padding: 0; }
+
+.message-time {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-top: 8px;
+    text-align: right;
+}
+.ai-message .message-time {
+    text-align: left;
+}
+
+.typing-indicator {
+    align-self: flex-start;
+    background: rgba(42, 34, 99, 0.3);
+    border: 1px solid rgba(170, 126, 238, 0.2);
+    border-radius: 12px;
+    border-bottom-left-radius: 0;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.typing-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: typingAnimation 1.4s infinite ease-in-out; }
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingAnimation {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-5px); }
 }
 
 /* --- INPUT AREA --- */
@@ -298,7 +349,7 @@ body {
     background: rgba(42, 34, 99, 0.3);
     border-radius: 12px;
     border: 1px solid rgba(170, 126, 238, 0.3);
-    padding: 5px;
+    padding: 5px 15px;
 }
 
 .input-box textarea {
@@ -306,15 +357,16 @@ body {
     background: transparent;
     border: none;
     color: white;
-    padding: 12px 15px;
+    padding: 12px 0;
     resize: none;
     height: 50px;
     outline: none;
+    font-size: 15px;
 }
 
 .input-actions {
     display: flex;
-    padding: 0 10px;
+    padding-left: 10px;
     gap: 10px;
 }
 
@@ -364,16 +416,12 @@ body {
     border-bottom: 1px solid rgba(170, 126, 238, 0.2);
     padding-bottom: 15px;
 }
+.panel-title { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.panel-title i { color: var(--accent); }
+.close-panel { background: transparent; border: none; color: var(--accent); font-size: 20px; cursor: pointer; }
 
-.close-panel {
-    background: transparent;
-    border: none;
-    color: var(--accent);
-    font-size: 20px;
-    cursor: pointer;
-}
 
-/* --- STUDY PLANNER & ATTENDANCE (GLOBAL CSS) --- */
+/* --- STUDY PLANNER & ATTENDANCE --- */
 .planner-header {
     display: flex;
     justify-content: space-between;
@@ -394,10 +442,7 @@ body {
     border-radius: 6px;
     cursor: pointer;
 }
-
-.planner-nav-btn.active {
-    background: rgba(170, 126, 238, 0.3);
-}
+.planner-nav-btn.active { background: rgba(170, 126, 238, 0.3); }
 
 .add-task-btn {
     background: var(--bg-gradient);
@@ -406,44 +451,31 @@ body {
     padding: 8px 15px;
     border-radius: 8px;
     cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
+/* Stat Cards (Grid for Desktop, Flex for Mobile handled in media queries) */
 .planner-stats, .attendance-stats {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
     margin-bottom: 20px;
-    margin-top: 10px;
 }
 
 .stat-card {
-    flex: 1;
-    background: rgba(170, 126, 238, 0.1); 
+    background: rgba(42, 34, 99, 0.3);
     border: 1px solid rgba(170, 126, 238, 0.2);
     padding: 15px 10px;
     border-radius: 10px;
     text-align: center;
 }
+.stat-value { font-size: 24px; font-weight: bold; color: var(--accent); }
+.stat-label { font-size: 12px; opacity: 0.8; }
 
-.stat-value {
-    font-size: 24px;
-    font-weight: bold;
-    color: var(--accent);
-}
-
-.stat-label {
-    font-size: 14px;
-    opacity: 0.8;
-}
-
-.task-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    min-height: 150px;
-}
-
+.task-list { display: flex; flex-direction: column; gap: 10px; }
 .task-item {
     background: rgba(42, 34, 99, 0.3);
     border: 1px solid rgba(170, 126, 238, 0.2);
@@ -453,82 +485,37 @@ body {
     align-items: center;
     justify-content: space-between;
 }
+.task-info { display: flex; align-items: center; gap: 15px; }
+.task-title { font-weight: 500; }
+.task-completed .task-title { text-decoration: line-through; opacity: 0.5; }
+.task-due { font-size: 12px; opacity: 0.7; }
+.task-actions button { background: transparent; border: none; color: #ff4757; cursor: pointer; font-size: 16px; }
 
-.task-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
+.no-tasks { text-align: center; padding: 30px 10px; color: rgba(255,255,255,0.6); }
+.add-first-task { margin-top: 15px; background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
 
-.task-title {
-    font-weight: 500;
-}
-
-.task-completed .task-title {
-    text-decoration: line-through;
-    opacity: 0.5;
-}
-
-.task-due {
-    font-size: 12px;
-    opacity: 0.7;
-}
-
-.task-actions button {
-    background: transparent;
-    border: none;
-    color: #ff4757;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.no-tasks {
-    text-align: center;
-    padding: 30px 10px;
-    color: rgba(255,255,255,0.6);
-}
-
-.add-first-task {
-    margin-top: 15px;
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-/* --- ADD TASK MODAL (GLOBAL CSS) --- */
+/* MODALS (Add Task & Attendance) - High Z-Index */
 .task-modal, .attendance-modal {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
 }
 
-.task-modal .modal-content, .attendance-modal .modal-content {
+.modal-content {
     background: #1a1535;
     padding: 25px;
     border-radius: 12px;
     width: 90%;
     max-width: 400px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(170, 126, 238, 0.3);
 }
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    color: var(--accent);
-}
-
+.modal-content h3 { color: var(--accent); margin-bottom: 20px; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; color: var(--accent); }
 .form-group input, .form-group select, .form-group textarea {
     width: 100%;
     padding: 10px;
@@ -538,30 +525,10 @@ body {
     color: white;
     outline: none;
 }
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.modal-btn {
-    padding: 8px 15px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-}
-
-.cancel-btn {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-.confirm-btn {
-    background: var(--accent);
-    color: white;
-}
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+.modal-btn { padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer; }
+.cancel-btn { background: rgba(255, 255, 255, 0.1); color: white; }
+.confirm-btn { background: var(--accent); color: white; }
 
 /* --- ATTENDANCE CALENDAR --- */
 .attendance-calendar {
@@ -570,12 +537,7 @@ body {
     gap: 5px;
     margin-bottom: 20px;
 }
-.calendar-header {
-    text-align: center;
-    font-weight: 600;
-    color: var(--accent);
-    font-size: 12px;
-}
+.calendar-header { text-align: center; font-weight: 600; color: var(--accent); font-size: 12px; }
 .calendar-day {
     aspect-ratio: 1;
     display: flex;
@@ -590,19 +552,8 @@ body {
 .calendar-day.absent { background: rgba(255, 71, 87, 0.2); color: #ff4757; }
 .calendar-day.late { background: rgba(255, 165, 0, 0.2); color: #ffa500; }
 .calendar-day.today { border: 2px solid var(--accent); }
-.calendar-navigation {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
-}
-.nav-btn {
-    background: rgba(170, 126, 238, 0.1);
-    border: 1px solid rgba(170, 126, 238, 0.3);
-    color: var(--accent);
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-}
+.calendar-navigation { display: flex; justify-content: space-between; margin-bottom: 15px; }
+.nav-btn { background: rgba(170, 126, 238, 0.1); border: 1px solid rgba(170, 126, 238, 0.3); color: var(--accent); padding: 8px 12px; border-radius: 6px; cursor: pointer; }
 
 /* --- WELCOME SCREEN --- */
 .welcome-screen {
@@ -612,7 +563,6 @@ body {
     justify-content: center;
     text-align: center;
 }
-
 .welcome-icon { font-size: 60px; color: var(--accent); margin-bottom: 20px; }
 .welcome-title { font-size: 24px; font-weight: 600; color: var(--accent); }
 .welcome-subtitle { margin-bottom: 30px; opacity: 0.8; max-width: 500px; }
@@ -628,22 +578,9 @@ body {
     border-radius: 12px;
     padding: 20px;
 }
+.quick-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px; }
+.quick-action-btn { background: rgba(170, 126, 238, 0.1); border: 1px solid rgba(170, 126, 238, 0.3); color: var(--accent); padding: 8px 15px; border-radius: 20px; cursor: pointer; }
 
-.quick-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 20px;
-}
-.quick-action-btn {
-    background: rgba(170, 126, 238, 0.1);
-    border: 1px solid rgba(170, 126, 238, 0.3);
-    color: var(--accent);
-    padding: 8px 15px;
-    border-radius: 20px;
-    cursor: pointer;
-}
 
 /* =========================================
    MOBILE RESPONSIVENESS
@@ -670,6 +607,7 @@ body {
         z-index: 1000;
         background-color: #1e1e2f; 
         box-shadow: 2px 0 15px rgba(0,0,0,0.5);
+        overflow-y: auto;
     }
     .sidebar.active { left: 0; }
     .close-sidebar-btn { display: block !important; }
@@ -681,7 +619,7 @@ body {
     }
     .nav-item i { margin: 0; width: auto; }
     
-    /* CRITICAL FIX: Removes the box around tooltips on mobile */
+    /* CRITICAL FIX: No backgrounds, borders, or boxes on mobile text */
     .nav-item .tooltip {
         position: static !important;
         opacity: 1 !important;
@@ -708,6 +646,7 @@ body {
         width: 100%; height: 100%;
         margin-left: 0; position: relative;
     }
+    
     .chat-container {
         padding-bottom: 100px;
     }
@@ -720,13 +659,10 @@ body {
         z-index: 100;
     }
 
-    .welcome-screen {
-        padding: 30px 15px 40px 15px; 
-        margin: 0 auto;
-    }
-    .welcome-features {
-        display: flex; flex-direction: column;
-    }
+    .welcome-screen { padding: 30px 15px 40px 15px; margin: 0 auto; }
+    .welcome-features { display: flex; flex-direction: column; }
+    .welcome-feature { max-width: 320px; margin: 0 auto; }
+
     .feature-panel {
         width: 100%; height: 100%;
         right: -100%; border-radius: 0; z-index: 999;
@@ -738,10 +674,39 @@ body {
     .planner-nav { width: 100%; justify-content: space-between; }
     .planner-nav-btn { flex: 1; text-align: center; }
     .add-task-btn { width: 100%; justify-content: center; }
+    
+    /* Ensure Stats stay in a flex row on mobile */
+    .planner-stats, .attendance-stats {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 10px;
+    }
 }
 
 @media (max-width: 576px) {
-    .planner-stats, .attendance-stats { gap: 8px; }
     .stat-card { padding: 10px 5px; }
     .stat-value { font-size: 18px; }
 }
+
+/* =========================================
+   TOOL-SPECIFIC OVERRIDES (Code, Flashcards, Math, etc)
+   ========================================= */
+/* Keeping your original tool stylings intact */
+.code-editor { width: 100%; height: 300px; background: #1e1e2d; border-radius: 8px; border: 1px solid rgba(170, 126, 238, 0.3); padding: 20px; font-family: 'Consolas', monospace; color: #e0e0e0; resize: none; outline: none; margin-bottom: 15px; }
+.code-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px 0; border-bottom: 1px solid rgba(170, 126, 238, 0.2); }
+.toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 10px; }
+.run-code { background: var(--bg-gradient); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.code-explanation { background: rgba(30, 30, 45, 0.3); border-radius: 8px; padding: 20px; border: 1px solid rgba(170, 126, 238, 0.2); max-height: 500px; overflow-y: auto; }
+.flashcard-container { perspective: 1000px; width: 100%; height: 300px; margin-bottom: 20px; }
+.flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s; cursor: pointer; border-radius: 12px; }
+.flashcard.flipped { transform: rotateY(180deg); }
+.flashcard-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; }
+.flashcard-front, .flashcard-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 30px; border-radius: 12px; text-align: center; background: var(--bg-gradient); }
+.flashcard-back { background: rgba(42, 34, 99, 0.8); transform: rotateY(180deg); border: 1px solid rgba(170, 126, 238, 0.3); }
+.citation-form { display: flex; flex-direction: column; gap: 15px; }
+.form-row { display: flex; gap: 15px; }
+.form-row .form-group { flex: 1; }
+#citation-output { min-height: 100px; white-space: pre-wrap; background: #1e1e2d; border-radius: 8px; border: 1px solid rgba(170, 126, 238, 0.3); padding: 15px; margin-top: 15px; }
+.record-btn { width: 120px; height: 120px; border-radius: 50%; background: var(--bg-gradient); color: white; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.transcript-container { background: #1e1e2d; border-radius: 12px; border: 1px solid rgba(170, 126, 238, 0.3); overflow: hidden; }
