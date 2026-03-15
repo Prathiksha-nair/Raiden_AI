@@ -3175,14 +3175,35 @@ body {
     /* Make main content and chat take up full screen */
     .main-content {
         width: 100%;
-        height: 100vh;
+        height: 100dvh;
         margin-left: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-container {
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+
+    /* Keep the input bar locked to the bottom on phones */
+    .input-container {
+        position: sticky;
+        bottom: 0;
+        background: #1e1e2f; /* Make sure this matches your dark background color */
+        z-index: 100;
+        padding: 10px;
+        padding-bottom: max(10px, env(safe-area-inset-bottom)); /* iPhone notch safe area */
+    }
+
+    .input-box {
+        padding: 8px 15px;
     }
 
     /* Make feature panels (Code, Math, Flashcards) cover the whole screen on mobile */
     .feature-panel {
         width: 100%;
-        height: 100vh;
+        height: 100dvh;
         right: -100%;
         border-radius: 0; /* Remove rounded corners on mobile */
         z-index: 999;
