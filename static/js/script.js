@@ -314,33 +314,49 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typingIndicator) typingIndicator.style.display = 'none';
     }
 
-    function cleanMarkdownFormatting(text) {
-        return text
-            // Remove markdown headers
-            .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-            .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-            .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-            // Remove bold markdown
+   function cleanMarkdownFormatting(text) {
+        if (!text) return '';
+        
+        let html = text
+            // Headers
+            .replace(/^### (.*$)/gm, '<h3 style="color:var(--accent); margin-top:15px; margin-bottom:10px;">$1</h3>')
+            .replace(/^## (.*$)/gm, '<h2 style="color:var(--accent); margin-top:15px; margin-bottom:10px;">$1</h2>')
+            .replace(/^# (.*$)/gm, '<h1 style="color:var(--accent); margin-top:15px; margin-bottom:10px;">$1</h1>')
+            // Bold
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            // Remove italic markdown
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            // Remove code markdown
-            .replace(/`(.*?)`/g, '<code>$1</code>')
-            // Remove strikethrough
-            .replace(/~~(.*?)~~/g, '<del>$1</del>')
-            // Convert line breaks to proper spacing
-            .replace(/\n\n/g, '</p><p>')
-            .replace(/\n/g, '<br>')
-            // Wrap in paragraphs if not already wrapped
-            .replace(/^(?!<[h|p|u|o|b|d|p])(.*?)(?=<[h|p|u|o|b|d|p]|$)/gm, '<p>$1</p>')
-            // Clean up empty paragraphs
-            .replace(/<p><\/p>/g, '')
-            .replace(/<p>(.*?)<\/p>/g, (match, content) => {
-                if (content.trim()) return match;
-                return '';
-            });
-    }
+            // Italic
+            .replace(/(?<!\w)\*(.*?)\*(?!\w)/g, '<em>$1</em>')
+            // Code blocks
+            .replace(/`(.*?)`/g, '<code style="background:rgba(170, 126, 238, 0.15); color:#d4b3ff; padding:2px 6px; border-radius:4px;">$1</code>')
+            // Turn * or - at the start of a line into list items
+            .replace(/^[\*\-]\s+(.*)$/gm, '<li>$1</li>')
+            // Turn numbers (1., 2.) at the start of a line into list items
+            .replace(/^\d+\.\s+(.*)$/gm, '<li>$1</li>');
 
+        // Wrap consecutive <li> tags in a nice <ul> circle list
+        html = html.replace(/(<li>.*<\/li>(?:\s*<li>.*<\/li>)*)/g, '<ul style="margin-left: 20px; margin-bottom: 15px; list-style-type: disc;">$1</ul>');
+
+        // Handle line breaks (double break = paragraph, single break = normal line break)
+        html = html.replace(/\n\n/g, '</p><p style="margin-bottom: 10px;">');
+        html = html.replace(/\n/g, '<br>');
+        
+        // Clean up ugly extra breaks inside lists
+        html = html.replace(/<\/li><br>/g, '</li>');
+        html = html.replace(/<ul(.*?)><br>/g, '<ul$1>');
+        html = html.replace(/<br><li/g, '<li'); 
+        html = html.replace(/<br><\/ul>/g, '</ul>');
+
+        // Ensure text starts wrapped in a paragraph if it doesn't have an HTML tag
+        if (!html.startsWith('<')) {
+            html = '<p style="margin-bottom: 10px;">' + html + '</p>';
+        }
+
+        // Remove empty paragraphs
+        html = html.replace(/<p[^>]*>\s*<\/p>/g, '');
+        
+        return html;
+    }
+    
     function scrollToBottom() {
         chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
     }
