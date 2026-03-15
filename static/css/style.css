@@ -655,22 +655,24 @@ body {
 }
 
 /* Code playground */
+/* Upgrade the Textarea to look sleeker */
 .code-editor {
     width: 100%;
-    height: 300px;
-    background: #1e1e2d;
+    height: 350px; /* Slightly taller */
+    background: #151521; /* Slightly darker than panel for depth */
     border-radius: 8px;
-    border: 1px solid rgba(170, 126, 238, 0.3);
+    border: 1px solid rgba(170, 126, 238, 0.2);
     padding: 20px;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace; /* Modern coding font */
     color: #e0e0e0;
-    resize: none;
+    resize: vertical; /* Let users expand it */
     outline: none;
-    margin-bottom: 15px;
-    line-height: 1.8;
+    margin-bottom: 20px;
+    line-height: 1.6;
     font-size: 14px;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-    transition: border-color 0.3s ease;
+    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.4); /* Deeper inner shadow */
+    transition: all 0.3s ease;
+    /* Keep formatting properties */
     tab-size: 4;
     -moz-tab-size: 4;
     -webkit-tab-size: 4;
@@ -683,16 +685,19 @@ body {
 
 .code-editor:focus {
     border-color: var(--accent);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 0 2px rgba(170, 126, 238, 0.1);
+    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.4), 0 0 0 3px rgba(170, 126, 238, 0.15);
 }
 
+/* Make the toolbar look like a sleek app header */
 .code-toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(170, 126, 238, 0.2);
+    padding: 12px 15px;
+    background: rgba(30, 30, 45, 0.6);
+    border-radius: 8px;
+    border: 1px solid rgba(170, 126, 238, 0.15);
 }
 
 .toolbar-left, .toolbar-right {
@@ -777,13 +782,40 @@ body {
     transform: none;
 }
 
+/* The New "Terminal" Output Look */
 .code-explanation {
-    background: rgba(30, 30, 45, 0.3);
-    border-radius: 8px;
-    padding: 20px;
+    background: #0d0d14; /* True dark for terminal feel */
+    border-radius: 6px;
+    padding: 0; /* Remove padding here, move to sections */
     border: 1px solid rgba(170, 126, 238, 0.2);
+    border-left: 4px solid var(--accent); /* Accent stripe on the left */
     max-height: 500px;
     overflow-y: auto;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Style the internal sections of the output */
+.code-explanation > div {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.code-explanation > div:last-child {
+    border-bottom: none;
+}
+
+/* Make the actual code output text pop */
+.terminal-output-text {
+    color: #a9dc76; /* Hacker green/pastel green for standard output */
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.terminal-error-text {
+    color: #ff6188; /* Soft red for errors */
+    font-size: 13px;
 }
 
 .compilation-status {
