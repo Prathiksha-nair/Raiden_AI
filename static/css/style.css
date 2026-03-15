@@ -321,7 +321,7 @@ body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 25px; /* Increased gap for breathing room */
+    gap: 25px;
     background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(170, 126, 238, 0.02)" d="M0,0 L100,0 L100,100 L0,100 Z" /><path fill="none" stroke="rgba(170, 126, 238, 0.05)" stroke-width="0.5" d="M0,50 L100,50 M50,0 L50,100" /></svg>');
     background-size: 50px 50px;
     overscroll-behavior: contain;
@@ -335,7 +335,7 @@ body {
     animation: fadeIn 0.3s ease;
     line-height: 1.6;
     font-size: 15px;
-    margin-bottom: 15px; /* Increased bottom margin */
+    margin-bottom: 25px; /* Increased for better spacing */
 }
 
 @keyframes fadeIn {
@@ -777,7 +777,6 @@ body {
     transform: none;
 }
 
-/* Enhanced code explanation styling */
 .code-explanation {
     background: rgba(30, 30, 45, 0.3);
     border-radius: 8px;
@@ -989,17 +988,21 @@ body {
 .planner-stats, .attendance-stats {
     display: flex;
     flex-direction: row;
+    flex-wrap: nowrap; /* CRITICAL: Forces elements to stay in a row */
     justify-content: space-between;
-    gap: 15px;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
     margin-bottom: 20px;
     margin-top: 10px;
 }
 
 .stat-card {
     flex: 1;
+    min-width: 0; /* CRITICAL: Prevents cards from blowing out of the container */
     background: rgba(170, 126, 238, 0.1);
     border: 1px solid rgba(170, 126, 238, 0.2);
-    padding: 15px 10px;
+    padding: 15px 5px; /* Reduced side padding to fit text nicely */
     border-radius: 10px;
     text-align: center;
 }
@@ -1020,6 +1023,52 @@ body {
     flex-direction: column;
     gap: 10px;
 }
+
+/* --- ADDED: Study Planner Empty States --- */
+.no-tasks {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: rgba(42, 34, 99, 0.2);
+    border: 1px dashed rgba(170, 126, 238, 0.3);
+    border-radius: 12px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.no-tasks i {
+    font-size: 40px;
+    color: var(--accent);
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+.no-tasks p {
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: var(--text-light);
+}
+
+.add-first-task {
+    background: var(--bg-gradient);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    box-shadow: 0 4px 15px rgba(102, 51, 174, 0.3);
+    transition: all 0.3s ease;
+}
+
+.add-first-task:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 51, 174, 0.4);
+}
+/* --- END ADDED --- */
 
 .task-item {
     background: rgba(42, 34, 99, 0.3);
@@ -1776,6 +1825,14 @@ body {
     color: #e0e0e0;
 }
 
+/* --- ADDED: Math Symbols Row Grid Fix --- */
+.math-symbol-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
 /* Math Symbols Enhanced Styling */
 .math-symbol-btn {
     background: rgba(30, 30, 45, 0.9);
@@ -2102,7 +2159,7 @@ body {
         align-items: center;
         justify-content: flex-start;
         padding: 15px 20px;
-        gap: 15px; /* Adds perfect, even spacing between icon and text */
+        gap: 15px; 
     }
 
     .nav-item i {
@@ -2243,5 +2300,28 @@ body {
 
     .feature-panel.active {
         right: 0;
+    }
+
+    /* --- STUDY PLANNER & ATTENDANCE MOBILE FIXES --- */
+    .planner-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .planner-nav {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .planner-nav-btn {
+        flex: 1;
+        text-align: center;
+        padding: 8px 5px;
+    }
+    
+    .add-task-btn {
+        width: 100%;
+        justify-content: center;
     }
 }
